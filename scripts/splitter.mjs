@@ -9,10 +9,10 @@ import { createCanvas, loadImage } from 'canvas';
 const inputPath = 'stats/daily/clothing/women/001.png';     // مسیر تصویر مبدا (از submodule)
 const outputDir = 'daily/clothing/women/sliced/';           // مسیر ذخیره خروجی‌ها
 
-const startX = 20;       // از چند پیکسل از چپ تصویر شروع شود
-const startY = 20;       // از چند پیکسل از بالا تصویر شروع شود
-const cropWidth = 500;  // عرض هر برش
-const cropHeight = 500; // ارتفاع هر برش
+const startX = 25;       // از چند پیکسل از چپ تصویر شروع شود
+const startY = 15;       // از چند پیکسل از بالا تصویر شروع شود
+const cropWidth = 410;  // عرض هر برش
+const cropHeight = 410; // ارتفاع هر برش
 const itemCount = 9;   // چند آیتم پشت‌سر‌هم برش داده شود (مثلاً 10 ردیف)
 
 const image = await loadImage(inputPath);
