@@ -1,0 +1,40 @@
+name: Split Stats Image
+
+on:
+schedule:
+- cron: '0 8 * * *' # اجرای روزانه ساعت 08:00 UTC
+workflow_dispatch: # امکان اجرای دستی هم برای تست
+
+jobs:
+split:
+runs-on: ubuntu-latest
+
+steps:
+- name: Checkout splitter repo
+uses: actions/checkout@v3
+with:
+submodules: true # دریافت فایل 001.png از ریپوی stats
+
+- name: Setup Node.js
+uses: actions/setup-node@v3
+with:
+node-version: 20
+
+- name: Install canvas dependencies
+run: |
+sudo apt-get update
+sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
+
+- name: Install npm packages
+run: npm install
+
+- name: Run splitter script
+run: node scripts/splitter.mjs --input=stats/daily/clothing/women/001.png
+
+- name: Commit results
+run: |
+git config --global user.name "github-actions"
+git config --global user.email "actions@github.com"
+git add daily/clothing/women/sliced/
+git commit -m "🖼️ Auto-split images"
+git push
