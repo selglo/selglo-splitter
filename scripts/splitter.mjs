@@ -12,7 +12,7 @@ const outputDir = 'daily/clothing/women/sliced/';           // مسیر ذخیر
 const startX = 15;       // از چند پیکسل از چپ تصویر شروع شود
 const startY = 30;       // از چند پیکسل از بالا تصویر شروع شود
 const cropWidth = 450;  // عرض هر برش
-const cropHeight = 410; // ارتفاع هر برش
+const cropHeight = 550; // ارتفاع هر برش
 const itemCount = 9;   // چند آیتم پشت‌سر‌هم برش داده شود (مثلاً 10 ردیف)
 
 const image = await loadImage(inputPath);
