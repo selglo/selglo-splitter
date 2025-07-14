@@ -7,7 +7,7 @@ import { createCanvas, loadImage } from 'canvas';
 
 // 🔧 تنظیمات برش تصویر
 const inputPath = 'stats/daily/clothing/women/001.png';     // مسیر تصویر مبدا (از submodule)
-const outputDir = 'daily/clothing/women/sliced/';           // مسیر ذخیره خروجی‌ها
+const outputDir = 'docs/clothing/women/';           // مسیر ذخیره خروجی‌ها
 
 const startX = 0;       // از چند پیکسل از چپ تصویر شروع شود
 const startY = 30;       // از چند پیکسل از بالا تصویر شروع شود
