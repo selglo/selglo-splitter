@@ -1,40 +1,48 @@
-name: split
+import fs from 'fs';
+import path from 'path';
+import { createCanvas, loadImage } from 'canvas';
 
-on:
-  push:
-    paths:
-      - ".github/workflows/splitter.yml"
-      - "scripts/**"
+// 🟢 تنظیمات ورودی و خروجی --------------------
 
-jobs:
-  split:
-    runs-on: ubuntu-latest
+const inputPath = 'stats/daily/clothing/women/001.png'; // مسیر فایل اصلی
+const outputDir = 'daily/clothing/women/sliced/';       // مسیر ذخیره برش‌ها
 
-    steps:
-      - name: Set up job
-        run: echo "Starting split workflow"
+const startX = 5;       // از چند پیکسل از چپ تصویر شروع شود
+const startY = 5;       // از چند پیکسل از بالا تصویر شروع شود
+const cropWidth = 300;  // عرض هر برش
+const cropHeight = 200; // ارتفاع هر برش
+const itemCount = 10;   // چند آیتم پشت‌سر‌هم برش داده شود (مثلاً 10 ردیف)
 
-      - name: Checkout splitter repo
-        uses: actions/checkout@v3
+// 🟢 بارگذاری تصویر ---------------------------
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
+const image = await loadImage(inputPath);
 
-      - name: Install canvas dependencies
-        run: sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
+// اگر پوشه خروجی وجود ندارد، آن را بساز
+fs.mkdirSync(outputDir, { recursive: true });
 
-      - name: Install npm packages
-        run: npm install
+// 🟢 حلقه برش و ذخیره فایل‌ها ------------------
 
-      - name: Run splitter script
-        run: node scripts/splitter.mjs
+for (let i = 0; i < itemCount; i++) {
+  const canvas = createCanvas(cropWidth, cropHeight);
+  const ctx = canvas.getContext('2d');
 
-      - name: Commit results
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add daily/clothing/women/sliced/
-          git commit -m "Update sliced images" || echo "No changes to commit"
-          git push
+  // برش از تصویر اصلی
+  ctx.drawImage(
+    image,
+    startX,                          // از کجای عرض تصویر
+    startY + i * cropHeight,         // از کجای ارتفاع (افزایشی برای هر ردیف)
+    cropWidth, cropHeight,           // چه عرض و ارتفاعی ببرد
+    0, 0,                            // روی بوم، از کجا رسم کند
+    cropWidth, cropHeight            // چه اندازه‌ای روی بوم بکشد (بدون تغییر مقیاس)
+  );
+
+  // تولید نام خروجی مثل p001.png
+  const filename = `p${String(i + 1).padStart(3, '0')}.png`;
+  const outputPath = path.join(outputDir, filename);
+
+  // ذخیره در مسیر خروجی
+  const buffer = canvas.toBuffer('image/png');
+  fs.writeFileSync(outputPath, buffer);
+}
+
+console.log(✅ Split done! ${itemCount} items saved in: ${outputDir});
