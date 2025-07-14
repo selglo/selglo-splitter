@@ -1,46 +1,40 @@
-// splitter.mjs
-// Crop daily image into 100 vertical parts (each item gets its own stat image)
+name: split
 
-import fs from 'fs';
-import path from 'path';
-import { createCanvas, loadImage } from 'canvas';
+on:
+  push:
+    paths:
+      - ".github/workflows/splitter.yml"
+      - "scripts/**"
 
-// مسیر ورودی تصویر کامل روزانه
-const inputPath = 'daily/clothing/women/001.png';
+jobs:
+  split:
+    runs-on: ubuntu-latest
 
-// مسیر خروجی برای ذخیره تصاویر برش‌خورده
-const outputDir = 'daily/clothing/women/sliced';
+    steps:
+      - name: Set up job
+        run: echo "Starting split workflow"
 
-// تعداد آیتم‌هایی که در تصویر هستند (می‌تونه کمتر از 100 هم باشه)
-const itemCount = 100;
+      - name: Checkout splitter repo
+        uses: actions/checkout@v3
 
-// سایز هر آیتم (عرض و ارتفاع هر برش)
-const itemWidth = 390;
-const itemHeight = 300;
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-(async () => {
-  // بارگذاری تصویر اصلی
-  const image = await loadImage(inputPath);
+      - name: Install canvas dependencies
+        run: sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
 
-  // اطمینان از وجود پوشه خروجی
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
+      - name: Install npm packages
+        run: npm install
 
-  for (let i = 0; i < itemCount; i++) {
-    const canvas = createCanvas(itemWidth, itemHeight);
-    const ctx = canvas.getContext('2d');
+      - name: Run splitter script
+        run: node scripts/splitter.mjs
 
-    // برش تصویر با استفاده از موقعیت y متغیر
-    ctx.drawImage(image, 0, -i * itemHeight);
-
-    // ساخت نام فایل مثل p001، p002، …، p100
-    const filename = `p${String(i + 1).padStart(3, '0')}.png`;
-    const outputPath = path.join(outputDir, filename);
-
-    // نوشتن فایل خروجی
-    const out = fs.createWriteStream(outputPath);
-    const stream = canvas.createPNGStream();
-    stream.pipe(out);
-  }
-})();
+      - name: Commit results
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add daily/clothing/women/sliced/
+          git commit -m "Update sliced images" || echo "No changes to commit"
+          git push
