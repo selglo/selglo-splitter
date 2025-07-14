@@ -35,7 +35,7 @@ const itemHeight = 300;
     ctx.drawImage(image, 0, -i * itemHeight);
 
     // ساخت نام فایل مثل p001، p002، …، p100
-    const filename = p${String(i + 1).padStart(3, '0')}.png;
+    const filename = `p${String(i + 1).padStart(3, '0')}.png`;
     const outputPath = path.join(outputDir, filename);
 
     // نوشتن فایل خروجی
