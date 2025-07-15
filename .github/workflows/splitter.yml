@@ -1,51 +1,44 @@
-# .github/workflows/splitter.yml
-# این فایل GitHub Actions، هر روز ساعت 08:00 UTC اجرا می‌شود
-# و با استفاده از فایل splitter.mjs، تمام تصاویر موجود در daily/clothing/women/ را به‌صورت جداگانه برش می‌دهد.
-
 name: split
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: '0 8 * * *'  # اجرای روزانه ساعت 08:00 UTC
-  workflow_dispatch:     # اجازه اجرای دستی
+    - cron: '0 8 * * *'  # هر روز ساعت 08:00 UTC
 
 jobs:
   run-split:
     runs-on: ubuntu-latest
 
     steps:
-      # 📦 دریافت سورس اصلی (selglo-splitter)
       - name: Checkout splitter repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          submodules: true         # فعال‌سازی submodule
+          submodules: true  # این فعال می‌کنه submodule رو
           fetch-depth: 1
 
-      # 🔧 نصب Node.js نسخه ۲۰
+      - name: Init submodules
+        run: git submodule update --init --recursive
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      # 📚 نصب کتابخانه‌های لازم برای canvas
       - name: Install canvas dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
-      # 📦 نصب پکیج‌های npm
       - name: Install npm packages
         run: npm install
 
-      # ✂️ اجرای فایل splitter.mjs
       - name: Run splitter script
         run: node scripts/splitter.mjs
 
-      # ✅ کامیت و پوش نهایی تصاویر برش خورده
       - name: Commit results
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add docs/clothing/women/
-          git commit -m "🔁 Auto-split images from daily/clothing/women"
-          git push
+  run: |
+    git config --global user.name "github-actions"
+    git config --global user.email "actions@github.com"
+    git add docs/clothing/women/
+    git commit -m "Add cropped images"
+    git push
