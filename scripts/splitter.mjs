@@ -7,7 +7,7 @@ import path from 'path';
 import { createCanvas, loadImage } from 'canvas';
 
 // 🔧 تنظیمات ثابت برش
-const inputDir = 'daily/clothing/women/';     // مسیر ورودی تصاویر اصلی
+const inputDir = 'stats/daily/clothing/women/';;     // مسیر ورودی تصاویر اصلی
 const outputDirBase = 'docs/clothing/women/'; // پوشه خروجی برای ذخیره برش‌ها
 
 const startX = 0;           // برش از پیکسل افقی
