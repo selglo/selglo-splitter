@@ -39,6 +39,6 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-          git add daily/clothing/women/sliced/
+          git add docs/clothing/women/
           git commit -m "Update sliced images"
           git push
